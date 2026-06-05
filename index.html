@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download Game</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        #slider img { width: 100%; height: auto; border-radius: 8px; display: none; }
+        #slider img.active { display: block; }
+        button { background-color: #28a745; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 15px; width: 100%; }
+        button:hover { background-color: #218838; }
+        input { width: 90%; padding: 10px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; }
+        .hidden { display: none; }
+        .payment-box { background: #e9ecef; padding: 15px; border-radius: 5px; margin-top: 15px; text-align: left; }
+        .payment-box h3 { margin-top: 0; color: #333; }
+    </style>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <div id="slider">
+        <img src="https://via.placeholder.com/600x300?text=Loading+Posters..." class="active" id="defaultPoster">
+    </div>
+
+    <h2 style="margin-top: 20px;">Game Download Portal</h2>
+    
+    <button id="mainBtn" onclick="checkUserStatus()">Loading...</button>
+    <p id="statusMsg" style="color: red; font-weight: bold;"></p>
+
+    <div id="userForm" class="hidden">
+        <h3>Apni Details Darj Karein</h3>
+        <input type="text" id="userName" placeholder="Name" required>
+        <input type="email" id="userEmail" placeholder="Gmail ID" required>
+        <input type="number" id="userWa" placeholder="WhatsApp Number" required>
+        
+        <button onclick="showPaymentOptions()">Send Payment</button>
+        <button style="background-color: #007bff;" onclick="showProofForm()">I have already sent payment</button>
+    </div>
+
+    <div id="paymentDetails" class="hidden payment-box">
+        <h3>Payment Accounts</h3>
+        <p><strong>Easypaisa:</strong> 03423944508 <br> Name: Muluk Hussain</p>
+        <hr>
+        <p><strong>JazzCash:</strong> 03285719803 <br> Name: Saima Jabeen</p>
+        <button style="background-color: #007bff;" onclick="showProofForm()">Payment Send Kar Di Hai</button>
+    </div>
+
+    <div id="proofForm" class="hidden">
+        <h3>Payment Proof Submit Karein</h3>
+        <input type="text" id="trxId" placeholder="Enter Payment TRX ID" required>
+        <br><br>
+        <label style="font-weight: bold;">Upload Screenshot:</label>
+        <input type="file" id="screenshot" accept="image/*" required>
+        <button id="submitBtn" onclick="submitDetails()">Submit Details</button>
+    </div>
+</div>
+
+<script>
+    // AAP KI FIREBASE CONFIGURATION YAHAN ADD KAREIN
+    const firebaseConfig = {
+        databaseURL: "https://earn-platform-76c26-default-rtdb.firebaseio.com/",
+        storageBucket: "earn-platform-76c26.appspot.com" // Storage ke liye yeh zaruri hai
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const storage = firebase.storage();
+
+    let driveLink = "";
+    let btnText = "Download";
+
+    // Fetch Settings from Firebase Admin
+    db.ref('settings').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if(data) {
+            if(data.buttonText) {
+                document.getElementById('mainBtn').innerText = data.buttonText;
+            }
+            if(data.driveLink) {
+                driveLink = data.driveLink;
+            }
+            if(data.posters) {
+                let slider = document.getElementById('slider');
+                slider.innerHTML = '';
+                let urls = data.posters.split(',');
+                urls.forEach((url, index) => {
+                    let img = document.createElement('img');
+                    img.src = url.trim();
+                    if(index === 0) img.classList.add('active');
+                    slider.appendChild(img);
+                });
+            }
+        }
+    });
+
+    function checkUserStatus() {
+        let savedWa = localStorage.getItem('userWa');
+        if(savedWa) {
+            db.ref('users/' + savedWa).once('value').then((snapshot) => {
+                let user = snapshot.val();
+                if(user && user.status === 'approved') {
+                    window.open(driveLink, '_blank'); // Open Google Drive Link
+                } else {
+                    document.getElementById('statusMsg').innerText = "Aap ki payment abhi Admin ne approve nahi ki. Intezar karein.";
+                }
+            });
+        } else {
+            document.getElementById('userForm').classList.remove('hidden');
+            document.getElementById('mainBtn').classList.add('hidden');
+        }
+    }
+
+    function showPaymentOptions() {
+        document.getElementById('paymentDetails').classList.remove('hidden');
+    }
+
+    function showProofForm() {
+        document.getElementById('userForm').classList.add('hidden');
+        document.getElementById('paymentDetails').classList.add('hidden');
+        document.getElementById('proofForm').classList.remove('hidden');
+    }
+
+    function submitDetails() {
+        let name = document.getElementById('userName').value;
+        let email = document.getElementById('userEmail').value;
+        let wa = document.getElementById('userWa').value;
+        let trx = document.getElementById('trxId').value;
+        let file = document.getElementById('screenshot').files[0];
+
+        if(!name || !email || !wa || !trx || !file) {
+            alert("Please tamam details aur screenshot fill karein!");
+            return;
+        }
+
+        document.getElementById('submitBtn').innerText = "Uploading...";
+        document.getElementById('submitBtn').disabled = true;
+
+        // Upload Screenshot to Firebase Storage
+        let storageRef = storage.ref('screenshots/' + wa + '_' + file.name);
+        storageRef.put(file).then((snapshot) => {
+            snapshot.ref.getDownloadURL().then((url) => {
+                // Save User Data to Realtime Database
+                db.ref('users/' + wa).set({
+                    name: name,
+                    email: email,
+                    whatsapp: wa,
+                    trxId: trx,
+                    screenshot: url,
+                    status: 'pending'
+                }).then(() => {
+                    localStorage.setItem('userWa', wa); // Remember user
+                    alert("Details send ho gayi hain! Admin ki approval ka intezar karein.");
+                    window.location.reload();
+                });
+            });
+        }).catch((error) => {
+            alert("Error: " + error.message);
+            document.getElementById('submitBtn').innerText = "Submit Details";
+            document.getElementById('submitBtn').disabled = false;
+        });
+    }
+</script>
+</body>
+</html>
