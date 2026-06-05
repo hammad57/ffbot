@@ -3,91 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Download Portal</title>
+    <title>VIP Game Cheats Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-        #slider img { width: 100%; height: auto; border-radius: 8px; display: none; }
+        /* Modern Gaming Theme Variables */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-panel: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --success-hover: #059669;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --sidebar-width: 250px;
+        }
+
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-dark); color: var(--text-main); margin: 0; display: flex; min-height: 100vh; }
+        
+        /* Sidebar Styles */
+        .sidebar { width: var(--sidebar-width); background-color: #0b1120; border-right: 1px solid #334155; padding: 20px 0; display: flex; flex-direction: column; }
+        .brand { text-align: center; padding-bottom: 20px; border-bottom: 1px solid #334155; margin-bottom: 20px; }
+        .brand h2 { color: var(--primary); margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px; }
+        .brand p { color: var(--text-muted); font-size: 12px; margin: 5px 0 0 0; }
+        .menu-list { list-style: none; padding: 0; margin: 0; }
+        .menu-list li a { display: block; padding: 15px 25px; color: var(--text-muted); text-decoration: none; font-size: 16px; transition: 0.3s; border-left: 4px solid transparent; }
+        .menu-list li a:hover, .menu-list li a.active { background-color: var(--bg-panel); color: white; border-left-color: var(--primary); }
+        .menu-list li a i { margin-right: 10px; width: 20px; text-align: center; }
+
+        /* Main Content Styles */
+        .main-wrapper { flex: 1; display: flex; flex-direction: column; }
+        .top-banner { background: linear-gradient(90deg, #1e293b, #3b82f6); padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.3); }
+        .top-banner h3 { margin: 0; color: white; font-weight: 600; }
+        
+        .content-area { padding: 30px; display: flex; justify-content: center; align-items: flex-start; }
+        .container { background: var(--bg-panel); width: 100%; max-width: 600px; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; text-align: center; }
+        
+        #slider { margin-bottom: 20px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+        #slider img { width: 100%; height: auto; display: none; }
         #slider img.active { display: block; }
-        h2 { color: #333; margin-top: 20px; }
-        .input-group { text-align: left; margin-bottom: 15px; }
-        .input-group label { display: block; font-weight: bold; margin-bottom: 5px; color: #555; font-size: 14px; }
-        input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 15px; }
-        button { border: none; padding: 14px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; transition: 0.3s; }
-        .btn-green { background-color: #28a745; color: white; }
-        .btn-green:hover { background-color: #218838; }
-        .btn-blue { background-color: #007bff; color: white; }
-        .btn-blue:hover { background-color: #0069d9; }
-        .hidden { display: none; }
-        .payment-box { background: #e9ecef; padding: 15px; border-radius: 8px; margin-top: 20px; text-align: left; border-left: 4px solid #28a745; }
-        .payment-box h3 { margin-top: 0; color: #333; font-size: 18px; }
-        .proof-section { background: #f8f9fa; padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #dee2e6; }
+
+        h2 { color: white; margin-top: 0; font-size: 26px; margin-bottom: 25px; }
+        
+        .input-group { text-align: left; margin-bottom: 18px; }
+        .input-group label { display: block; font-weight: bold; margin-bottom: 8px; color: var(--text-muted); font-size: 14px; }
+        input { width: 100%; padding: 14px; background: #0f172a; border: 1px solid #334155; color: white; border-radius: 6px; box-sizing: border-box; font-size: 15px; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--primary); }
+        
+        button { border: none; padding: 15px 20px; font-size: 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; font-weight: bold; transition: 0.3s; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-green { background-color: var(--success); color: white; }
+        .btn-green:hover { background-color: var(--success-hover); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+        .btn-blue { background-color: var(--primary); color: white; }
+        .btn-blue:hover { background-color: var(--primary-hover); box-shadow: 0 0 15px rgba(59, 130, 246, 0.4); }
+        .btn-whatsapp { background-color: #25D366; color: white; margin-top: 15px; }
+        .btn-whatsapp:hover { background-color: #128C7E; box-shadow: 0 0 15px rgba(37, 211, 102, 0.4); }
+        .btn-secondary { background-color: transparent; color: var(--text-muted); border: 1px solid var(--text-muted); padding: 10px; margin-top: 20px; }
+        .btn-secondary:hover { background-color: #334155; color: white; }
+
+        .hidden { display: none !important; }
+        .payment-box { background: rgba(59, 130, 246, 0.1); padding: 20px; border-radius: 8px; margin-top: 20px; text-align: left; border-left: 4px solid var(--primary); }
+        .payment-box h3 { margin-top: 0; color: white; font-size: 18px; margin-bottom: 15px; }
+        .payment-box p { color: #cbd5e1; margin: 8px 0; }
+        .proof-section { background: rgba(255, 255, 255, 0.05); padding: 20px; border-radius: 8px; margin-top: 20px; border: 1px solid #334155; }
+
+        /* Status & Alert Box */
+        .status-box { padding: 20px; border-radius: 8px; margin: 20px 0; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; }
+        .status-box p { color: #fca5a5; font-weight: bold; margin: 0; font-size: 15px; }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { flex-direction: column; }
+            .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid #334155; flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 10px; }
+            .brand { border-bottom: none; margin: 0; padding: 10px; width: 100%; }
+            .menu-list { display: flex; flex-wrap: wrap; justify-content: center; width: 100%; }
+            .menu-list li a { padding: 10px 15px; font-size: 14px; }
+            .content-area { padding: 15px; }
+        }
     </style>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 </head>
 <body>
 
-<div class="container">
-    <div id="slider">
-        <img src="https://via.placeholder.com/600x300?text=Loading+Posters..." class="active" id="defaultPoster">
+    <aside class="sidebar">
+        <div class="brand">
+            <h2>G-Cheats</h2>
+            <p>Premium Gaming Portal</p>
+        </div>
+        <ul class="menu-list">
+            <li><a href="#" class="active"><i class="fas fa-home"></i> Home / Download</a></li>
+            <li><a href="#"><i class="fas fa-gem"></i> VIP Features</a></li>
+            <li><a href="#"><i class="fas fa-video"></i> Tutorials</a></li>
+            <li><a href="https://wa.me/923485465097" target="_blank"><i class="fas fa-headset"></i> Support</a></li>
+        </ul>
+    </aside>
+
+    <div class="main-wrapper">
+        <header class="top-banner">
+            <h3><i class="fas fa-gamepad"></i> Download Portal</h3>
+            <span style="color: #cbd5e1; font-size: 14px;">Status: Online</span>
+        </header>
+
+        <main class="content-area">
+            <div class="container">
+                <div id="slider">
+                    <img src="https://via.placeholder.com/600x300/1e293b/3b82f6?text=Loading+Posters..." class="active" id="defaultPoster">
+                </div>
+
+                <h2>Game Download Portal</h2>
+                
+                <div id="statusSection">
+                    <button id="mainBtn" class="btn-green hidden" onclick="openDriveLink()"><i class="fas fa-download"></i> Loading...</button>
+                    
+                    <div id="pendingAlert" class="status-box hidden">
+                        <p id="statusMsg">Aap ki request abhi Admin ne approve nahi ki. Bara-e-meharbani intezar karein.</p>
+                        <button onclick="resetRequest()" class="btn-secondary"><i class="fas fa-redo"></i> Apply New Request</button>
+                    </div>
+                </div>
+
+                <div id="userForm" class="hidden">
+                    <h3 style="color: var(--primary); margin-bottom: 20px; font-size: 20px;">Apni Details Darj Karein</h3>
+                    
+                    <div class="input-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="userName" placeholder="Apna naam likhein" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Gmail ID *</label>
+                        <input type="email" id="userEmail" placeholder="example@gmail.com" required>
+                    </div>
+                    <div class="input-group">
+                        <label>WhatsApp Number *</label>
+                        <input type="number" id="userWa" placeholder="03XXXXXXXXX" required>
+                    </div>
+                    
+                    <div id="actionButtons">
+                        <button class="btn-green" onclick="showPaymentOptions()"><i class="fas fa-paper-plane"></i> Send Payment</button>
+                        <button class="btn-blue" onclick="showProofSection()"><i class="fas fa-check-circle"></i> I have already sent payment</button>
+                    </div>
+
+                    <div id="paymentDetails" class="hidden payment-box">
+                        <h3><i class="fas fa-wallet"></i> Payment Accounts</h3>
+                        <p><strong>Easypaisa:</strong> 03423944508 <br> <span style="color:#94a3b8">Name: Muluk Hussain</span></p>
+                        <hr style="border: 0; border-top: 1px solid #334155; margin: 15px 0;">
+                        <p><strong>JazzCash:</strong> 03285719803 <br> <span style="color:#94a3b8">Name: Saima Jabeen</span></p>
+                        <button class="btn-blue" onclick="showProofSection()"><i class="fas fa-arrow-right"></i> Payment Send Kar Di Hai</button>
+                    </div>
+
+                    <div id="proofSection" class="hidden proof-section">
+                        <h3 style="margin-top: 0; color: var(--primary);"><i class="fas fa-file-invoice-dollar"></i> Payment Proof</h3>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">Neechay di gayi maloomat mukammal karein ta ke hum verify kar sakein.</p>
+                        
+                        <div class="input-group">
+                            <label>Payment TRX ID *</label>
+                            <input type="text" id="trxId" placeholder="TRX ID likhein (Zaroori hai)" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Date (Optional)</label>
+                            <input type="date" id="paymentDate">
+                        </div>
+                        <div class="input-group">
+                            <label>Sender Account Name (Optional)</label>
+                            <input type="text" id="senderName" placeholder="Jis account se paise bheje">
+                        </div>
+                        
+                        <button id="submitBtn" class="btn-green" onclick="submitDetails()"><i class="fas fa-cloud-upload-alt"></i> Submit for Approval</button>
+                    </div>
+                </div>
+
+                <a href="https://api.whatsapp.com/send?phone=923485465097&text=Hi%20Hammad!%0Ai%20want%20to%20buy%20your%20game%20cheats%20file." target="_blank" style="text-decoration: none;">
+                    <button class="btn-whatsapp"><i class="fab fa-whatsapp" style="font-size: 20px;"></i> Contact on WhatsApp</button>
+                </a>
+
+            </div>
+        </main>
     </div>
-
-    <h2>Game Download Portal</h2>
-    
-    <button id="mainBtn" class="btn-green" onclick="checkUserStatus()">Loading...</button>
-    <p id="statusMsg" style="color: red; font-weight: bold; margin-top: 15px;"></p>
-
-    <div id="userForm" class="hidden">
-        <h3 style="color: #444; margin-bottom: 20px;">Apni Details Darj Karein</h3>
-        
-        <div class="input-group">
-            <label>Full Name *</label>
-            <input type="text" id="userName" placeholder="Apna naam likhein" required>
-        </div>
-        <div class="input-group">
-            <label>Gmail ID *</label>
-            <input type="email" id="userEmail" placeholder="example@gmail.com" required>
-        </div>
-        <div class="input-group">
-            <label>WhatsApp Number *</label>
-            <input type="number" id="userWa" placeholder="03XXXXXXXXX" required>
-        </div>
-        
-        <div id="actionButtons">
-            <button class="btn-green" onclick="showPaymentOptions()">Send Payment</button>
-            <button class="btn-blue" onclick="showProofSection()">I have already sent payment</button>
-        </div>
-
-        <div id="paymentDetails" class="hidden payment-box">
-            <h3>Payment Accounts</h3>
-            <p><strong>Easypaisa:</strong> 03423944508 <br> Name: Muluk Hussain</p>
-            <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
-            <p><strong>JazzCash:</strong> 03285719803 <br> Name: Saima Jabeen</p>
-            <button class="btn-blue" onclick="showProofSection()">Payment Send Kar Di Hai</button>
-        </div>
-
-        <div id="proofSection" class="hidden proof-section">
-            <h3 style="margin-top: 0; color: #007bff;">Payment Proof</h3>
-            <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Neechay di gayi maloomat mukammal karein ta ke hum verify kar sakein.</p>
-            
-            <div class="input-group">
-                <label>Payment TRX ID *</label>
-                <input type="text" id="trxId" placeholder="TRX ID likhein (Zaroori hai)" required>
-            </div>
-            <div class="input-group">
-                <label>Date (Optional)</label>
-                <input type="date" id="paymentDate">
-            </div>
-            <div class="input-group">
-                <label>Sender Account Name (Optional)</label>
-                <input type="text" id="senderName" placeholder="Jis account se paise bheje">
-            </div>
-            
-            <button id="submitBtn" class="btn-green" onclick="submitDetails()">Submit for Approval</button>
-        </div>
-    </div>
-</div>
 
 <script>
     // AAP KI FIREBASE CONFIGURATION
@@ -106,7 +196,8 @@
         const data = snapshot.val();
         if(data) {
             if(data.buttonText) {
-                document.getElementById('mainBtn').innerText = data.buttonText;
+                let mainBtn = document.getElementById('mainBtn');
+                mainBtn.innerHTML = `<i class="fas fa-download"></i> ${data.buttonText}`;
             }
             if(data.driveLink) {
                 driveLink = data.driveLink;
@@ -116,13 +207,16 @@
                 slider.innerHTML = '';
                 let urls = data.posters.split(',');
                 urls.forEach((url, index) => {
-                    let img = document.createElement('img');
-                    img.src = url.trim();
-                    if(index === 0) img.classList.add('active');
-                    slider.appendChild(img);
+                    if(url.trim() !== "") {
+                        let img = document.createElement('img');
+                        img.src = url.trim();
+                        if(index === 0) img.classList.add('active');
+                        slider.appendChild(img);
+                    }
                 });
             }
         }
+        checkUserStatus(); // Check status after loading settings
     });
 
     function checkUserStatus() {
@@ -131,18 +225,35 @@
             db.ref('users/' + savedWa).once('value').then((snapshot) => {
                 let user = snapshot.val();
                 if(user && user.status === 'approved') {
-                    if(driveLink) {
-                        window.open(driveLink, '_blank');
-                    } else {
-                        alert("New Updates upload ki ja rahi hain bahut jald file download k leye available ho jaye ge.");
-                    }
+                    document.getElementById('mainBtn').classList.remove('hidden');
+                    document.getElementById('pendingAlert').classList.add('hidden');
+                    document.getElementById('userForm').classList.add('hidden');
                 } else {
-                    document.getElementById('statusMsg').innerText = "Aap ki request abhi Admin ne approve nahi ki. Bara-e-meharbani intezar karein.";
+                    document.getElementById('mainBtn').classList.add('hidden');
+                    document.getElementById('pendingAlert').classList.remove('hidden');
+                    document.getElementById('userForm').classList.add('hidden');
                 }
             });
         } else {
             document.getElementById('userForm').classList.remove('hidden');
             document.getElementById('mainBtn').classList.add('hidden');
+            document.getElementById('pendingAlert').classList.add('hidden');
+        }
+    }
+
+    function openDriveLink() {
+        if(driveLink) {
+            window.open(driveLink, '_blank');
+        } else {
+            alert("Download link abhi available nahi hai.");
+        }
+    }
+
+    // New Request Logic (Clears Local Storage & Reloads)
+    function resetRequest() {
+        if(confirm("Kiya aap waqai nayi request send karna chahte hain? Purani request ka status khatam ho jaye ga.")) {
+            localStorage.removeItem('userWa');
+            window.location.reload();
         }
     }
 
@@ -154,7 +265,6 @@
     function showProofSection() {
         document.getElementById('paymentDetails').classList.add('hidden');
         document.getElementById('proofSection').classList.remove('hidden');
-        // Hide the initial action buttons to keep UI clean
         document.getElementById('actionButtons').classList.add('hidden');
     }
 
@@ -171,10 +281,10 @@
             return;
         }
 
-        document.getElementById('submitBtn').innerText = "Please Wait...";
-        document.getElementById('submitBtn').disabled = true;
+        let btn = document.getElementById('submitBtn');
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Please Wait...';
+        btn.disabled = true;
 
-        // Save User Data directly to Realtime Database (No storage needed)
         db.ref('users/' + wa).set({
             name: name,
             email: email,
@@ -189,8 +299,8 @@
             window.location.reload();
         }).catch((error) => {
             alert("Error: " + error.message);
-            document.getElementById('submitBtn').innerText = "Submit for Approval";
-            document.getElementById('submitBtn').disabled = false;
+            btn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Submit for Approval';
+            btn.disabled = false;
         });
     }
 </script>
