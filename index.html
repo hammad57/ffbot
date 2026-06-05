@@ -69,6 +69,9 @@
         /* Status & Alert Box */
         .status-box { padding: 20px; border-radius: 8px; margin: 20px 0; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; }
         .status-box p { color: #fca5a5; font-weight: bold; margin: 0; font-size: 15px; }
+        
+        /* Multiple Files Container */
+        #downloadContainer { background: rgba(16, 185, 129, 0.05); padding: 20px; border-radius: 8px; border: 1px solid var(--success); margin-bottom: 20px; display: flex; flex-direction: column; gap: 12px; }
 
         /* Responsive */
         @media (max-width: 768px) {
@@ -113,7 +116,7 @@
                 <h2>Game Download Portal</h2>
                 
                 <div id="statusSection">
-                    <button id="mainBtn" class="btn-green hidden" onclick="openDriveLink()"><i class="fas fa-download"></i> Loading...</button>
+                    <div id="downloadContainer" class="hidden"></div>
                     
                     <div id="pendingAlert" class="status-box hidden">
                         <p id="statusMsg">Aap ki request abhi Admin ne approve nahi ki. Bara-e-meharbani intezar karein.</p>
@@ -189,18 +192,18 @@
     }
     const db = firebase.database();
 
-    let driveLink = "";
+    let availableFiles = [];
+    let customBtnText = "Download";
 
     // Fetch Settings from Firebase
     db.ref('settings').on('value', (snapshot) => {
         const data = snapshot.val();
         if(data) {
             if(data.buttonText) {
-                let mainBtn = document.getElementById('mainBtn');
-                mainBtn.innerHTML = `<i class="fas fa-download"></i> ${data.buttonText}`;
+                customBtnText = data.buttonText;
             }
-            if(data.driveLink) {
-                driveLink = data.driveLink;
+            if(data.files) {
+                availableFiles = data.files;
             }
             if(data.posters) {
                 let slider = document.getElementById('slider');
@@ -225,31 +228,43 @@
             db.ref('users/' + savedWa).once('value').then((snapshot) => {
                 let user = snapshot.val();
                 if(user && user.status === 'approved') {
-                    document.getElementById('mainBtn').classList.remove('hidden');
+                    document.getElementById('downloadContainer').classList.remove('hidden');
                     document.getElementById('pendingAlert').classList.add('hidden');
                     document.getElementById('userForm').classList.add('hidden');
+                    
+                    renderDownloadButtons();
                 } else {
-                    document.getElementById('mainBtn').classList.add('hidden');
+                    document.getElementById('downloadContainer').classList.add('hidden');
                     document.getElementById('pendingAlert').classList.remove('hidden');
                     document.getElementById('userForm').classList.add('hidden');
                 }
             });
         } else {
             document.getElementById('userForm').classList.remove('hidden');
-            document.getElementById('mainBtn').classList.add('hidden');
+            document.getElementById('downloadContainer').classList.add('hidden');
             document.getElementById('pendingAlert').classList.add('hidden');
         }
     }
 
-    function openDriveLink() {
-        if(driveLink) {
-            window.open(driveLink, '_blank');
+    function renderDownloadButtons() {
+        let container = document.getElementById('downloadContainer');
+        container.innerHTML = '<h3 style="color: var(--success); margin-top: 0; margin-bottom: 5px; font-size: 20px;"><i class="fas fa-folder-open"></i> Aap Ki Files Ready Hain</h3>';
+        
+        if(availableFiles && availableFiles.length > 0) {
+            availableFiles.forEach(f => {
+                let btn = document.createElement('button');
+                btn.className = 'btn-green';
+                btn.onclick = () => window.open(f.link, '_blank');
+                // Button ke text ke sath File ka naam show hoga
+                btn.innerHTML = `<i class="fas fa-download"></i> ${customBtnText} - ${f.name}`;
+                container.appendChild(btn);
+            });
         } else {
-            alert("Download link abhi available nahi hai.");
+            container.innerHTML += '<p style="color: #cbd5e1; text-align: left;">Abhi tak Admin ne koi file upload nahi ki.</p>';
         }
     }
 
-    // New Request Logic (Clears Local Storage & Reloads)
+    // New Request Logic
     function resetRequest() {
         if(confirm("Kiya aap waqai nayi request send karna chahte hain? Purani request ka status khatam ho jaye ga.")) {
             localStorage.removeItem('userWa');
